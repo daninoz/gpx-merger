@@ -1,4 +1,4 @@
-# gpx-vue
+# gpx-merger
 
 ## Project setup
 ```
