@@ -9,7 +9,18 @@
   },
   "dependencies": {
     "core-js": "^3.3.2",
-    "vue": "^2.6.10"
+    "gpx-parser-builder": "^1.0.1",
+    "leaflet": "^1.5.1",
+    "leaflet-gpx": "^1.4.0",
+    "lodash": "^4.17.15",
+    "materialize-css": "^1.0.0",
+    "node-sass": "^4.13.0",
+    "sass-loader": "^8.0.0",
+    "vue": "^2.6.10",
+    "vue2-leaflet": "^2.2.1",
+    "vue2-leaflet-gpx": "^1.0.0",
+    "vuex": "^3.1.2",
+    "xml2js": "^0.4.22"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.0.0",
@@ -26,10 +37,12 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
+      "plugin:vue/recommended",
       "eslint:recommended"
     ],
-    "rules": {},
+    "rules": {
+      "no-console": 0
+    },
     "parserOptions": {
       "parser": "babel-eslint"
     }
