@@ -1,5 +1,9 @@
 import xml2js from 'xml2js'
 
+import { colors } from '@/constants'
+
+const usedColors = []
+
 export default {
   readGpxFile(url, cb) {
     var req = new window.XMLHttpRequest();
@@ -21,5 +25,23 @@ export default {
   convertHashToRoute(gpxHash) {
     var builder = new xml2js.Builder()
     return builder.buildObject(gpxHash)
+  },
+
+  getColor() {
+    const newColor = colors.find((color) => {
+      return !usedColors.includes(color)
+    })
+
+    usedColors.push(newColor)
+
+    return newColor
+  },
+
+  removeUsedColor(color) {
+    for(let i = 0; i < usedColors.length; i++){ 
+      if ( usedColors[i] === color) {
+        usedColors.splice(i, 1); 
+      }
+    }
   }
 }

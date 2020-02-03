@@ -20,8 +20,6 @@ import 'leaflet-gpx';
 import { LMap, LTileLayer, LMarker } from 'vue2-leaflet'
 import { mapGetters } from 'vuex'
 
-import { colors } from '@/constants'
-
 export default {
   name: 'RouteMap',
   components: {
@@ -37,7 +35,7 @@ export default {
       bounds: null,
       waypoints: [],
       overlays: [],
-      mapBounds: []
+      mapBounds: [],
     };
   },
   computed: {
@@ -63,7 +61,7 @@ export default {
           this.overlays.push(new L.GPX(gpxString, {
             async: true,
             polyline_options: {
-              color: colors[index],
+              color: this.$store.state.routes[index].color,
             }
           }).on('loaded', (e) => {
             this.mapBounds.push(e.target.getBounds());

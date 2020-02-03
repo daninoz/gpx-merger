@@ -17,6 +17,7 @@ export default new Vuex.Store({
     ['add-route'](state, file) {
       helper.convertRoutetoHash(file, (err, route) => {
         if (!err) {
+          route.color = helper.getColor()
           state.routes.push(route)
         }
       })
@@ -42,6 +43,8 @@ export default new Vuex.Store({
       state.routes[payload.routeIndex].gpx.trk[0].trkseg[0].trkpt.splice(payload.pointIndex, total - payload.pointIndex)
       routeB.gpx.trk[0].trkseg[0].trkpt.splice(0, payload.pointIndex)
 
+      routeB.color = helper.getColor()
+
       state.routes.splice(payload.routeIndex + 1, 0, routeB)
     },
 
@@ -50,6 +53,7 @@ export default new Vuex.Store({
     },
 
     ['remove'](state, routeIndex) {
+      helper.removeUsedColor(state.routes[routeIndex].color)
       state.routes.splice(routeIndex, 1)
     },
 
@@ -58,12 +62,15 @@ export default new Vuex.Store({
       const gpxBPoints = state.routes[routeIndex + 1].gpx.trk[0].trkseg[0].trkpt
 
       gpxA.gpx.trk[0].trkseg[0].trkpt.push(...gpxBPoints)
+      
+      helper.removeUsedColor(state.routes[routeIndex + 1].color)
 
       state.routes.splice(routeIndex, 2, gpxA)
     },
 
     ['duplicate'](state, routeIndex) {
       const routeB = cloneDeep(state.routes[routeIndex])
+      routeB.color = helper.getColor()
 
       state.routes.splice(routeIndex, 0, routeB)
     },
