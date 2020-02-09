@@ -24,10 +24,7 @@ export default {
 
   convertHashToRoute(gpxHash) {
     var builder = new xml2js.Builder();
-    console.log(gpxHash.gpx);
-    const build = builder.buildObject({ gpx: gpxHash.gpx });
-    console.log(build);
-    return build;
+    return builder.buildObject({ gpx: gpxHash.gpx });
   },
 
   getColor() {
