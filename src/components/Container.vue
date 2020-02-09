@@ -4,7 +4,7 @@
       <li v-for="(route, index) in routes" :key="index">
         <div class="header">
           <h5 :style="{ color: route.color }" @click="$store.commit('set-active-route', index)">
-            <span v-if="route.gpx.metadata[0].name">{{ route.gpx.metadata[0].name[0] }}</span>
+            <span v-if="route.gpx && route.gpx.metadata[0].name">{{ route.gpx.metadata[0].name[0] }}</span>
             <span v-else>Unnamed</span>
           </h5>
           <div>
@@ -52,8 +52,13 @@ export default {
   },
   methods: {
     exportRoute(index) {
-      const metadata = this.$store.state.routes[index].gpx.metadata[0];
-      const routeName = metadata.name ? metadata.name[0] : "untitled";
+      let metadata;
+      let routeName = "untitled";
+
+      if (this.$store.state.routes[index].gpx.metadata) {
+        metadata = this.$store.state.routes[index].gpx.metadata[0];
+        routeName = metadata.name ? metadata.name[0] : "untitled";
+      }
 
       const blob = new Blob([this.$store.getters.routeStrings[index]], {
         type: "text/plain;charset=utf-8"

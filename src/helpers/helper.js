@@ -1,17 +1,17 @@
-import xml2js from 'xml2js'
+import xml2js from "xml2js";
 
-import { colors } from '@/constants'
+import { colors } from "@/constants";
 
-const usedColors = []
+const usedColors = [];
 
 export default {
   readGpxFile(url, cb) {
     var req = new window.XMLHttpRequest();
-    req.open('GET', url, true);
-    req.overrideMimeType('text/xml');
+    req.open("GET", url, true);
+    req.overrideMimeType("text/xml");
     req.onreadystatechange = function() {
       if (req.readyState != 4) return;
-      if(req.status == 200) cb(req.responseText);
+      if (req.status == 200) cb(req.responseText);
     };
     req.send(null);
   },
@@ -23,25 +23,28 @@ export default {
   },
 
   convertHashToRoute(gpxHash) {
-    var builder = new xml2js.Builder()
-    return builder.buildObject(gpxHash)
+    var builder = new xml2js.Builder();
+    console.log(gpxHash.gpx);
+    const build = builder.buildObject({ gpx: gpxHash.gpx });
+    console.log(build);
+    return build;
   },
 
   getColor() {
-    const newColor = colors.find((color) => {
-      return !usedColors.includes(color)
-    })
+    const newColor = colors.find(color => {
+      return !usedColors.includes(color);
+    });
 
-    usedColors.push(newColor)
+    usedColors.push(newColor);
 
-    return newColor
+    return newColor;
   },
 
   removeUsedColor(color) {
-    for(let i = 0; i < usedColors.length; i++){ 
-      if ( usedColors[i] === color) {
-        usedColors.splice(i, 1); 
+    for (let i = 0; i < usedColors.length; i++) {
+      if (usedColors[i] === color) {
+        usedColors.splice(i, 1);
       }
     }
   }
-}
+};
