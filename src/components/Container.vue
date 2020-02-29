@@ -4,7 +4,9 @@
       <li v-for="(route, index) in routes" :key="index">
         <div class="header">
           <h5 :style="{ color: route.color }" @click="$store.commit('set-active-route', index)">
-            <span v-if="route.gpx && route.gpx.metadata[0].name">{{ route.gpx.metadata[0].name[0] }}</span>
+            <span
+              v-if="route.gpx && route.gpx.metadata && route.gpx.metadata[0].name"
+            >{{ route.gpx.metadata[0].name[0] }}</span>
             <span v-else>Unnamed</span>
           </h5>
           <div>
