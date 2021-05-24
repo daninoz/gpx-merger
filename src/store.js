@@ -11,12 +11,18 @@ export default new Vuex.Store({
     routes: [],
     activePoint: null,
     activeRoute: -1,
-    forceFitBounds: false
+    forceFitBounds: false,
   },
   mutations: {
     ["add-route"](state, file) {
       helper.convertRoutetoHash(file, (err, route) => {
         if (!err) {
+          route.gpx.trk[0].trkseg[0].trkpt.forEach((el) => {
+            delete el.ele;
+            delete el.time;
+            delete el.extensions;
+          });
+
           route.color = helper.getColor();
           state.routes.push(route);
         }
@@ -60,6 +66,24 @@ export default new Vuex.Store({
       routeB.color = helper.getColor();
 
       state.routes.splice(payload.routeIndex + 1, 0, routeB);
+    },
+
+    ["simplify"](state, routeIndex) {
+      let points = state.routes[routeIndex].gpx.trk[0].trkseg[0].trkpt;
+      points.forEach((el, index) => {
+        if (index === 0) return true;
+
+        let distance = helper.getDistanceFromLatLonInM(
+          el.$.lat,
+          el.$.lon,
+          points[index - 1].$.lat,
+          points[index - 1].$.lon
+        );
+
+        if (distance <= 5) {
+          points.splice(index, 1);
+        }
+      });
     },
 
     ["reverse"](state, routeIndex) {
@@ -136,7 +160,7 @@ export default new Vuex.Store({
           ].$.lat,
           state.routes[activeRouteIndex].gpx.trk[0].trkseg[0].trkpt[
             activePointIndex - 1
-          ].$.lon
+          ].$.lon,
         ];
       } else if (activeRouteIndex > 0) {
         const prevRouteLastPoint =
@@ -150,7 +174,7 @@ export default new Vuex.Store({
           ].$.lat,
           state.routes[activeRouteIndex - 1].gpx.trk[0].trkseg[0].trkpt[
             prevRouteLastPoint
-          ].$.lon
+          ].$.lon,
         ];
         state.activeRoute = activeRouteIndex - 1;
       } else {
@@ -179,7 +203,7 @@ export default new Vuex.Store({
           ].$.lat,
           state.routes[activeRouteIndex].gpx.trk[0].trkseg[0].trkpt[
             activePointIndex + 1
-          ].$.lon
+          ].$.lon,
         ];
       } else if (activeRouteIndex < totalRoutes - 1) {
         nextPoint.routeIndex = activeRouteIndex + 1;
@@ -187,7 +211,8 @@ export default new Vuex.Store({
         nextPoint.coordinates = [
           state.routes[activeRouteIndex + 1].gpx.trk[0].trkseg[0].trkpt[0].$
             .lat,
-          state.routes[activeRouteIndex + 1].gpx.trk[0].trkseg[0].trkpt[0].$.lon
+          state.routes[activeRouteIndex + 1].gpx.trk[0].trkseg[0].trkpt[0].$
+            .lon,
         ];
         state.activeRoute = activeRouteIndex + 1;
       } else {
@@ -212,8 +237,8 @@ export default new Vuex.Store({
           ].$.lat,
           state.routes[activeRouteIndex].gpx.trk[0].trkseg[0].trkpt[
             activePointIndex
-          ].$.lon
-        ]
+          ].$.lon,
+        ],
       };
     },
 
@@ -225,8 +250,8 @@ export default new Vuex.Store({
         pointIndex: 0,
         coordinates: [
           state.routes[activeRouteIndex].gpx.trk[0].trkseg[0].trkpt[0].$.lat,
-          state.routes[activeRouteIndex].gpx.trk[0].trkseg[0].trkpt[0].$.lon
-        ]
+          state.routes[activeRouteIndex].gpx.trk[0].trkseg[0].trkpt[0].$.lon,
+        ],
       };
     },
 
@@ -244,8 +269,8 @@ export default new Vuex.Store({
           ].$.lat,
           state.routes[activeRouteIndex].gpx.trk[0].trkseg[0].trkpt[
             activeRouteTotalPoints - 1
-          ].$.lon
-        ]
+          ].$.lon,
+        ],
       };
     },
 
@@ -257,8 +282,8 @@ export default new Vuex.Store({
         pointIndex: 0,
         coordinates: [
           state.routes[nextRouteIndex].gpx.trk[0].trkseg[0].trkpt[0].$.lat,
-          state.routes[nextRouteIndex].gpx.trk[0].trkseg[0].trkpt[0].$.lon
-        ]
+          state.routes[nextRouteIndex].gpx.trk[0].trkseg[0].trkpt[0].$.lon,
+        ],
       };
     },
 
@@ -270,13 +295,13 @@ export default new Vuex.Store({
       state.activePoint = {
         routeIndex: activeRouteIndex,
         pointIndex: activeRouteTotalPoints - state.activePoint.pointIndex - 1,
-        coordinates: state.activePoint.coordinates
+        coordinates: state.activePoint.coordinates,
       };
     },
 
     ["set-force-fit-bounds"](state, payload) {
       state.forceFitBounds = payload;
-    }
+    },
   },
   actions: {
     ["delete-point"]({ commit, state }, payload) {
@@ -304,6 +329,9 @@ export default new Vuex.Store({
       commit("go-next-route");
       commit("set-active-route", state.activeRoute + 1);
     },
+    ["simplify"]({ commit }, payload) {
+      commit("simplify", payload);
+    },
     ["reverse"]({ commit, state }, payload) {
       commit("reverse", payload);
 
@@ -321,7 +349,7 @@ export default new Vuex.Store({
         let newPoint = {
           routeIndex: payload,
           pointIndex: totalRoutePoints + state.activePoint.pointIndex,
-          coordinates: state.activePoint.coordinates
+          coordinates: state.activePoint.coordinates,
         };
 
         commit("set-active-point", newPoint);
@@ -342,7 +370,7 @@ export default new Vuex.Store({
 
       let newPoint = {
         pointIndex: state.activePoint.pointIndex,
-        coordinates: state.activePoint.coordinates
+        coordinates: state.activePoint.coordinates,
       };
 
       if (state.activePoint.routeIndex === payload) {
@@ -366,7 +394,7 @@ export default new Vuex.Store({
 
       let newPoint = {
         pointIndex: state.activePoint.pointIndex,
-        coordinates: state.activePoint.coordinates
+        coordinates: state.activePoint.coordinates,
       };
 
       if (state.activePoint.routeIndex === payload) {
@@ -384,13 +412,13 @@ export default new Vuex.Store({
       } else if (state.activeRoute === payload + 1) {
         commit("force-active-route", payload);
       }
-    }
+    },
   },
   getters: {
     routeStrings(state) {
-      return state.routes.map(route => {
+      return state.routes.map((route) => {
         return helper.convertHashToRoute(route);
       });
-    }
-  }
+    },
+  },
 });

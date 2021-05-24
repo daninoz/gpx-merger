@@ -10,6 +10,7 @@
             <span v-else>Unnamed</span>
           </h5>
           <div>
+            <button class="btn-small orange" @click="$store.dispatch('simplify', index)">Simplify</button>
             <button class="btn-small purple" @click="$store.dispatch('reverse', index)">Reverse</button>
             <button class="btn-small lime" @click="$store.commit('duplicate', index)">Duplicate</button>
             <button class="btn-small cyan" @click="$store.dispatch('join', index)">Join Down</button>
