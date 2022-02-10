@@ -15,7 +15,7 @@
     "leaflet-gpx": "^1.5.1",
     "lodash": "^4.17.21",
     "materialize-css": "^1.0.0",
-    "node-sass": "^4.13.0",
+    "node-sass": "^7.0.0",
     "sass-loader": "^8.0.0",
     "vue": "^2.6.10",
     "vue2-leaflet": "^2.2.1",
