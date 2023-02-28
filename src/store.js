@@ -18,7 +18,6 @@ export default new Vuex.Store({
       helper.convertRoutetoHash(file, (err, route) => {
         if (!err) {
           route.gpx.trk[0].trkseg[0].trkpt.forEach((el) => {
-            delete el.ele;
             delete el.time;
             delete el.extensions;
           });
@@ -69,21 +68,29 @@ export default new Vuex.Store({
     },
 
     ["simplify"](state, routeIndex) {
-      let points = state.routes[routeIndex].gpx.trk[0].trkseg[0].trkpt;
-      points.forEach((el, index) => {
-        if (index === 0) return true;
+      let keepSimplifying = true;
+      while (keepSimplifying) {
+        let prevPointsCount = points.length;
+        let points = state.routes[routeIndex].gpx.trk[0].trkseg[0].trkpt;
+        points.forEach((el, index) => {
+          if (index === 0) return true;
+  
+          let distance = helper.getDistanceFromLatLonInM(
+            el.$.lat,
+            el.$.lon,
+            points[index - 1].$.lat,
+            points[index - 1].$.lon
+          );
+  
+          if (distance <= 5) {
+            points.splice(index, 1);
+          }
+        });
 
-        let distance = helper.getDistanceFromLatLonInM(
-          el.$.lat,
-          el.$.lon,
-          points[index - 1].$.lat,
-          points[index - 1].$.lon
-        );
-
-        if (distance <= 5) {
-          points.splice(index, 1);
+        if (prevPointsCount === points.count) {
+          keepSimplifying = false;
         }
-      });
+      }
     },
 
     ["reverse"](state, routeIndex) {
