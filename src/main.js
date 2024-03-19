@@ -5,6 +5,8 @@ import App from "./App.vue";
 import "materialize-css/dist/css/materialize.css";
 import "materialize-css/dist/js/materialize.js";
 
+import 'iconify-icon';
+
 Vue.config.productionTip = false;
 
 new Vue({

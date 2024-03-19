@@ -23,6 +23,33 @@ export default new Vuex.Store({
           });
 
           route.color = helper.getColor();
+
+          let keepSimplifying = true;
+          let points = route.gpx.trk[0].trkseg[0].trkpt;
+          
+          while (keepSimplifying) {
+            let prevPointsCount = points.length;
+            points = route.gpx.trk[0].trkseg[0].trkpt;
+            points.forEach((el, index) => {
+              if (index === 0) return true;
+      
+              let distance = helper.getDistanceFromLatLonInM(
+                el.$.lat,
+                el.$.lon,
+                points[index - 1].$.lat,
+                points[index - 1].$.lon
+              );
+      
+              if (distance <= 5) {
+                points.splice(index, 1);
+              }
+            });
+
+            if (prevPointsCount === points.length) {
+              keepSimplifying = false;
+            }
+          }
+
           state.routes.push(route);
         }
       });
@@ -65,32 +92,6 @@ export default new Vuex.Store({
       routeB.color = helper.getColor();
 
       state.routes.splice(payload.routeIndex + 1, 0, routeB);
-    },
-
-    ["simplify"](state, routeIndex) {
-      let keepSimplifying = true;
-      while (keepSimplifying) {
-        let prevPointsCount = points.length;
-        let points = state.routes[routeIndex].gpx.trk[0].trkseg[0].trkpt;
-        points.forEach((el, index) => {
-          if (index === 0) return true;
-  
-          let distance = helper.getDistanceFromLatLonInM(
-            el.$.lat,
-            el.$.lon,
-            points[index - 1].$.lat,
-            points[index - 1].$.lon
-          );
-  
-          if (distance <= 5) {
-            points.splice(index, 1);
-          }
-        });
-
-        if (prevPointsCount === points.count) {
-          keepSimplifying = false;
-        }
-      }
     },
 
     ["reverse"](state, routeIndex) {
@@ -335,9 +336,6 @@ export default new Vuex.Store({
       commit("split", payload);
       commit("go-next-route");
       commit("set-active-route", state.activeRoute + 1);
-    },
-    ["simplify"]({ commit }, payload) {
-      commit("simplify", payload);
     },
     ["reverse"]({ commit, state }, payload) {
       commit("reverse", payload);

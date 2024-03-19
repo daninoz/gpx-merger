@@ -1,45 +1,29 @@
 <template>
   <ul class="collection" :class="{ active: $store.state.activeRoute === index }">
-    <li
-      v-for="(point, pointIndex) in points"
-      :key="pointIndex"
-      tabindex="0"
-      class="collection-item"
-      :class="{ active: 
-        $store.state.activePoint &&
-        $store.state.activePoint.routeIndex === index &&
-        $store.state.activePoint.pointIndex === pointIndex }"
-      @click="setActivePoint(point.$.lat, point.$.lon, pointIndex)"
-      @keyup.down.prevent="$store.commit('go-next-point')"
-      @keyup.up.prevent="$store.commit('go-prev-point')"
-      @keyup.delete.prevent="deletePoint(pointIndex)"
-    >
+    <li v-for="(point, pointIndex) in points" :key="pointIndex" tabindex="0" class="collection-item" :class="{
+    active:
+      $store.state.activePoint &&
+      $store.state.activePoint.routeIndex === index &&
+      $store.state.activePoint.pointIndex === pointIndex
+  }"
+      @click="setActivePoint(point.$.lat, point.$.lon, pointIndex)" @keyup.down.prevent="$store.commit('go-next-point')"
+      @keyup.up.prevent="$store.commit('go-prev-point')" @keyup.delete.prevent="deletePoint(pointIndex)">
       Point number: {{ pointIndex }}
-      <div
-        v-if="$store.state.activePoint &&
-          $store.state.activePoint.routeIndex === index &&
-          $store.state.activePoint.pointIndex === pointIndex"
-      >
-        <button
-          v-if="pointIndex > 0"
-          class="btn-small light-blue"
-          @click.stop="deleteBeforePoint(pointIndex)"
-        >Start Here</button>
-        <button
-          v-if="pointIndex < points.length - 1"
-          class="btn-small indigo"
-          @click.stop="deleteAfterPoint(pointIndex)"
-        >End Here</button>
-        <button
-          v-if="points.length > 0 && pointIndex > 0"
-          class="btn-small blue"
-          @click.stop="split(pointIndex)"
-        >Split Here</button>
-        <button
-          v-if="points.length > 0"
-          class="btn-small red"
-          @click.stop="deletePoint(pointIndex)"
-        >Delete</button>
+      <div v-if="$store.state.activePoint &&
+    $store.state.activePoint.routeIndex === index &&
+    $store.state.activePoint.pointIndex === pointIndex">
+        <button v-if="pointIndex > 0" class="btn-small light-blue" @click.stop="deleteBeforePoint(pointIndex)" title="Start track here (Delete all previous points)">
+          <iconify-icon icon="ic:file-upload" width="22" height="22" rotate="90deg"></iconify-icon>
+        </button>
+        <button v-if="pointIndex < points.length - 1" class="btn-small indigo" @click.stop="deleteAfterPoint(pointIndex)" title="End track here (Delete all following points)">
+          <iconify-icon icon="ic:file-upload" width="22" height="22" rotate="-90deg"></iconify-icon>
+        </button>
+        <button v-if="points.length > 0 && pointIndex > 0" class="btn-small blue" @click.stop="split(pointIndex)" title="Split (Merge track in 2 parts in this point)">
+          <iconify-icon icon="ic:call-split" width="22" height="22" rotate="180deg"></iconify-icon>
+        </button>
+        <button v-if="points.length > 0" class="btn-small red" @click.stop="deletePoint(pointIndex)" title="Delete Point">
+          <iconify-icon icon="ic:delete" width="22" height="22"></iconify-icon>
+        </button>
       </div>
     </li>
   </ul>
@@ -123,10 +107,17 @@ li {
 
   > div {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
   }
 
   button {
-    margin-left: 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
     cursor: default;
   }
 }
