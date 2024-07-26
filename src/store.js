@@ -30,20 +30,6 @@ export default new Vuex.Store({
           while (keepSimplifying) {
             let prevPointsCount = points.length;
             points = route.gpx.trk[0].trkseg[0].trkpt;
-            points.forEach((el, index) => {
-              if (index === 0) return true;
-      
-              let distance = helper.getDistanceFromLatLonInM(
-                el.$.lat,
-                el.$.lon,
-                points[index - 1].$.lat,
-                points[index - 1].$.lon
-              );
-      
-              if (distance <= 5) {
-                points.splice(index, 1);
-              }
-            });
 
             if (prevPointsCount === points.length) {
               keepSimplifying = false;
