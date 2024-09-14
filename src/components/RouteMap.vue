@@ -12,6 +12,7 @@ import L from "leaflet";
 import "leaflet-gpx";
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
 import { mapGetters } from "vuex";
+import helper from "@/helpers/helper";
 
 export default {
   name: "RouteMap",
@@ -32,7 +33,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["routeStrings"])
+    ...mapGetters(["routeStrings"]),
+
   },
   watch: {
     routeStrings() {
@@ -66,6 +68,32 @@ export default {
                     this.$store.commit("set-force-fit-bounds", false);
                   }, 1000);
                 }
+              })
+              .on("click", (e) => {
+                let minDistance = Infinity;
+                const point = {};
+                this.$store.state.routes[index].gpx.trk[0].trkseg[0].trkpt.forEach(({ $ }, pointIndex) => {
+                  const distance = helper.getDistanceFromLatLonInM(Number($.lat), Number($.lon), e.latlng.lat, e.latlng.lng);
+
+                  if (distance < minDistance) {
+                    point.lat = $.lat;
+                    point.lon = $.lon;
+                    point.index = pointIndex;
+                    minDistance = distance;
+                  }
+                });
+
+                this.$store.commit("set-active-point", {
+                  pointIndex: point.index,
+                  routeIndex: index,
+                  coordinates: [point.lat, point.lon]
+                });
+                if (this.$store.state.activeRoute !== index) {
+                  this.$store.commit("set-active-route", index);
+                }
+                setTimeout(() => {
+                  document.querySelector(`#app > div.list-container > ul > li:nth-child(${index + 1}) > ul > li:nth-child(${point.index + 1})`).scrollIntoView();
+                })
               })
               .addTo(mapObject)
           );
